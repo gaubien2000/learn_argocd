@@ -3,30 +3,6 @@ kind: Namespace
 metadata:
   name: media
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: qbittorrent-config
-  namespace: media
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: qbittorrent-downloads
-  namespace: media
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,9 +28,9 @@ spec:
           protocol: UDP
         env:
         - name: PUID
-          value: "1000"   # change to your Pi user's UID if needed
+          value: "1000"   # check with `id -u pi`
         - name: PGID
-          value: "1000"   # change to your Pi user's GID if needed
+          value: "1000"   # check with `id -g pi`
         - name: TZ
           value: "Etc/UTC"
         - name: WEBUI_PORT
@@ -66,11 +42,13 @@ spec:
           mountPath: /downloads
       volumes:
       - name: config
-        persistentVolumeClaim:
-          claimName: qbittorrent-config
+        hostPath:
+          path: /home/pi/qbittorrent/config
+          type: DirectoryOrCreate
       - name: downloads
-        persistentVolumeClaim:
-          claimName: qbittorrent-downloads
+        hostPath:
+          path: /home/pi/qbittorrent/downloads
+          type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
