@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/gaubien2000/learn_argocd.git'
     targetRevision: main
-    path: torrentq
+    path: apps/qbittorrent
   destination:
     server: https://kubernetes.default.svc
     namespace: media
