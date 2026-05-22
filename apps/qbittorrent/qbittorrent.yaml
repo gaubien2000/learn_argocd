@@ -18,6 +18,28 @@ spec:
       labels:
         app: qbittorrent
     spec:
+      initContainers:
+      - name: configure-webui
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          CONFIG_DIR=/config/qBittorrent
+          CONFIG_FILE="$CONFIG_DIR/qBittorrent.conf"
+          mkdir -p "$CONFIG_DIR"
+          if [ -f "$CONFIG_FILE" ]; then
+            if grep -q '^WebUI\\HostHeaderValidation=' "$CONFIG_FILE"; then
+              sed -i 's/^WebUI\\HostHeaderValidation=.*/WebUI\\HostHeaderValidation=false/' "$CONFIG_FILE"
+            else
+              printf '\nWebUI\\HostHeaderValidation=false\n' >> "$CONFIG_FILE"
+            fi
+          else
+            printf '[Preferences]\nWebUI\\HostHeaderValidation=false\n' > "$CONFIG_FILE"
+          fi
+        volumeMounts:
+        - name: config
+          mountPath: /config
       containers:
       - name: qbittorrent
         image: ghcr.io/linuxserver/qbittorrent:latest
