@@ -32,13 +32,13 @@ spec:
             if grep -Fq 'WebUI\HostHeaderValidation=' "$CONFIG_FILE"; then
               sed -i 's|^WebUI\HostHeaderValidation=.*|WebUI\HostHeaderValidation=false|' "$CONFIG_FILE"
             else
-              printf '%s
-' 'WebUI\HostHeaderValidation=false' >> "$CONFIG_FILE"
+              echo 'WebUI\HostHeaderValidation=false' >> "$CONFIG_FILE"
             fi
           else
-            printf '%s
-%s
-' '[Preferences]' 'WebUI\HostHeaderValidation=false' > "$CONFIG_FILE"
+            {
+              echo '[Preferences]'
+              echo 'WebUI\HostHeaderValidation=false'
+            } > "$CONFIG_FILE"
           fi
         volumeMounts:
         - name: config
