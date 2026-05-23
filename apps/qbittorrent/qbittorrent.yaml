@@ -18,6 +18,10 @@ spec:
       labels:
         app: qbittorrent
     spec:
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "1"
       initContainers:
       - name: configure-webui
         image: busybox:1.36
