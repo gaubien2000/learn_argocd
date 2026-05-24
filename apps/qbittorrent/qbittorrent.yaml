@@ -9,6 +9,7 @@ metadata:
   name: qbittorrent
   namespace: media
 spec:
+  type: NodePort
   replicas: 1
   selector:
     matchLabels:
