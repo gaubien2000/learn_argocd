@@ -76,7 +76,7 @@ spec:
           type: DirectoryOrCreate
       - name: downloads
         hostPath:
-          path: /home/pi/qbittorrent/downloads
+          path: /var/qbittorrent
           type: DirectoryOrCreate
 ---
 apiVersion: v1
