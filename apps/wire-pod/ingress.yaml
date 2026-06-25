@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: wire-pod.local
+  - host: wire-pod.happy.house
     http:
       paths:
       - path: /

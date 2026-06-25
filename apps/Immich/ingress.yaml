@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: immich.local
+  - host: immich.happy.house
     http:
       paths:
       - path: /

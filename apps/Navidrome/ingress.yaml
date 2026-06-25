@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: navidrome.local
+  - host: navidrome.happy.house
     http:
       paths:
       - path: /
