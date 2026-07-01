@@ -35,6 +35,8 @@ spec:
           value: info
         - name: ND_SESSIONTIMEOUT
           value: 24h
+        - name: ND_JUKEBOX_ENABLED
+          value: "true"
         - name: ND_BASEURL
           value: ""
         volumeMounts:
