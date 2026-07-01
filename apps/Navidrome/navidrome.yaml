@@ -22,6 +22,8 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
+        supplementalGroups:
+        - 29
       containers:
       - name: navidrome
         image: deluan/navidrome:latest
@@ -45,6 +47,8 @@ spec:
         - name: music
           mountPath: /music
           readOnly: true
+        - name: sound
+          mountPath: /dev/snd
       volumes:
       - name: data
         hostPath:
@@ -54,6 +58,10 @@ spec:
         hostPath:
           path: /var/navidrome/music
           type: DirectoryOrCreate
+      - name: sound
+        hostPath:
+          path: /dev/snd
+          type: Directory
 ---
 apiVersion: v1
 kind: Service
