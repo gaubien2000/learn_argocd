@@ -32,18 +32,26 @@ spec:
           CONFIG_DIR=/config/qBittorrent
           CONFIG_FILE="$CONFIG_DIR/qBittorrent.conf"
           mkdir -p "$CONFIG_DIR"
-          if [ -f "$CONFIG_FILE" ]; then
-            if grep -Fq 'WebUI\HostHeaderValidation=' "$CONFIG_FILE"; then
-              sed -i 's|^WebUI\HostHeaderValidation=.*|WebUI\HostHeaderValidation=false|' "$CONFIG_FILE"
+          set_config() {
+            section="$1"
+            key="$2"
+            value="$3"
+            if grep -Fq "$key=" "$CONFIG_FILE"; then
+              sed -i "s|^$key=.*|$key=$value|" "$CONFIG_FILE"
+            elif grep -Fq "[$section]" "$CONFIG_FILE"; then
+              sed -i "/^\[$section\]$/a $key=$value" "$CONFIG_FILE"
             else
-              echo 'WebUI\HostHeaderValidation=false' >> "$CONFIG_FILE"
+              printf '\n[%s]\n%s=%s\n' "$section" "$key" "$value" >> "$CONFIG_FILE"
             fi
-          else
+          }
+          if [ ! -f "$CONFIG_FILE" ]; then
             {
               echo '[Preferences]'
-              echo 'WebUI\HostHeaderValidation=false'
             } > "$CONFIG_FILE"
           fi
+          set_config 'BitTorrent' 'Session\DefaultSavePath' '/downloads'
+          set_config 'BitTorrent' 'Session\TempPath' '/downloads/incomplete'
+          set_config 'Preferences' 'WebUI\HostHeaderValidation' 'false'
         volumeMounts:
         - name: config
           mountPath: /config
