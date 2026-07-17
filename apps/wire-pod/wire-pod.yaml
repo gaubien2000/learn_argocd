@@ -27,7 +27,8 @@ spec:
           type: RuntimeDefault
       containers:
       - name: wire-pod
-        image: spkuja/wire-pod:latest
+        image: wire-pod-nonroot:20260717
+        imagePullPolicy: Never
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

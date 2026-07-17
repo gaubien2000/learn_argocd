@@ -1,0 +1,17 @@
+FROM spkuja/wire-pod@sha256:c4c751f89099d52db8e5117ecceb778bf8fc8e69a99bd58e4d63a4298b9a22e3
+
+USER root
+WORKDIR /wire-pod
+RUN git clone --depth 1 https://github.com/kercre123/wire-pod.git /tmp/wire-pod \
+    && rsync -a --exclude=data /tmp/wire-pod/ /wire-pod/ \
+    && rm -rf /tmp/wire-pod \
+    && echo "3" | STT=vosk DATA_DIR=/wire-pod/data ./setup.sh --non-interactive \
+    && cp -a /root/.vosk /home/wirepod/.vosk \
+    && chown -R wirepod:wirepod /wire-pod /home/wirepod
+
+USER wirepod
+ENV HOME=/home/wirepod \
+    DATA_DIR=/wire-pod/data \
+    LD_LIBRARY_PATH=/home/wirepod/.vosk/libvosk
+WORKDIR /wire-pod/chipper
+CMD ["bash", "-lc", "source ./source.sh && exec ./chipper"]
