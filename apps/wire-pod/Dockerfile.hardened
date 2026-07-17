@@ -6,6 +6,11 @@ RUN git clone --depth 1 https://github.com/kercre123/wire-pod.git /tmp/wire-pod 
     && rsync -a --exclude=data /tmp/wire-pod/ /wire-pod/ \
     && rm -rf /tmp/wire-pod \
     && echo "3" | STT=vosk DATA_DIR=/wire-pod/data ./setup.sh --non-interactive \
+    && cd /wire-pod/chipper \
+    && CGO_ENABLED=1 \
+       CGO_CFLAGS="-I/root/.vosk/libvosk" \
+       CGO_LDFLAGS="-L/root/.vosk/libvosk -lvosk -ldl -lpthread" \
+       /usr/local/go/bin/go build -tags nolibopusfile -o chipper cmd/vosk/main.go \
     && cp -a /root/.vosk /home/wirepod/.vosk \
     && chown -R wirepod:wirepod /wire-pod /home/wirepod
 

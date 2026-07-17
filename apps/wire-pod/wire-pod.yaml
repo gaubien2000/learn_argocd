@@ -27,7 +27,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: wire-pod
-        image: wire-pod-nonroot:20260717
+        image: wire-pod-nonroot:20260717-2
         imagePullPolicy: Never
         securityContext:
           allowPrivilegeEscalation: false
