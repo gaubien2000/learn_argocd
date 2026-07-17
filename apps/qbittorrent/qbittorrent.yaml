@@ -70,6 +70,10 @@ spec:
       containers:
       - name: qbittorrent
         image: ghcr.io/linuxserver/qbittorrent:latest
+        command:
+        - /app/qbittorrent-nox
+        args:
+        - --webui-port=8080
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
