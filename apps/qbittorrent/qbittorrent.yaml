@@ -18,6 +18,13 @@ spec:
       labels:
         app: qbittorrent
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       dnsConfig:
         options:
         - name: ndots
@@ -25,6 +32,11 @@ spec:
       initContainers:
       - name: configure-webui
         image: busybox:1.36
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
         command:
         - sh
         - -c
@@ -58,6 +70,11 @@ spec:
       containers:
       - name: qbittorrent
         image: ghcr.io/linuxserver/qbittorrent:latest
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
         ports:
         - containerPort: 8080
         - containerPort: 6881
