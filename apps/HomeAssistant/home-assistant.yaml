@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: home-assistant
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: home-assistant
+  namespace: home-assistant
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: home-assistant
+  template:
+    metadata:
+      labels:
+        app: home-assistant
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: home-assistant
+        image: ghcr.io/home-assistant/home-assistant@sha256:09e70fd9b1cdf044e165658516f6b6a2c1ce1444776627b35cb085d1c2f08d22
+        command:
+        - python3
+        args:
+        - -m
+        - homeassistant
+        - --config
+        - /config
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        ports:
+        - name: http
+          containerPort: 8123
+        env:
+        - name: TZ
+          value: America/New_York
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        startupProbe:
+          httpGet:
+            path: /
+            port: http
+          failureThreshold: 60
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 30
+      volumes:
+      - name: config
+        hostPath:
+          path: /var/home-assistant/config
+          type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: home-assistant
+  namespace: home-assistant
+spec:
+  selector:
+    app: home-assistant
+  ports:
+  - name: http
+    port: 8123
+    targetPort: http
