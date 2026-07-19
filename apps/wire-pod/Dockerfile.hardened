@@ -2,16 +2,28 @@ FROM spkuja/wire-pod@sha256:c4c751f89099d52db8e5117ecceb778bf8fc8e69a99bd58e4d63
 
 USER root
 WORKDIR /wire-pod
+COPY wirepod-advertise-ip.patch /tmp/wirepod-advertise-ip.patch
+COPY apiConfig.escape-pod.json /tmp/apiConfig.escape-pod.json
+COPY persistent-entrypoint.sh /usr/local/bin/wire-pod-entrypoint
 RUN git clone --depth 1 https://github.com/kercre123/wire-pod.git /tmp/wire-pod \
+    && git -C /tmp/wire-pod apply /tmp/wirepod-advertise-ip.patch \
     && rsync -a --exclude=data /tmp/wire-pod/ /wire-pod/ \
-    && rm -rf /tmp/wire-pod \
+    && rm -rf /tmp/wire-pod /tmp/wirepod-advertise-ip.patch \
     && echo "3" | STT=vosk DATA_DIR=/wire-pod/data ./setup.sh --non-interactive \
+    && mkdir -p /wire-pod/vosk/models/en-US \
+    && wget -q https://github.com/kercre123/vosk-models/raw/main/vosk-model-small-en-us-0.15.zip -O /tmp/vosk-model.zip \
+    && unzip -q /tmp/vosk-model.zip -d /wire-pod/vosk/models/en-US \
+    && mv /wire-pod/vosk/models/en-US/vosk-model-small-en-us-0.15 /wire-pod/vosk/models/en-US/model \
+    && rm -f /tmp/vosk-model.zip \
+    && cp /tmp/apiConfig.escape-pod.json /wire-pod/chipper/apiConfig.json \
+    && rm -f /tmp/apiConfig.escape-pod.json \
     && cd /wire-pod/chipper \
     && CGO_ENABLED=1 \
        CGO_CFLAGS="-I/root/.vosk/libvosk" \
        CGO_LDFLAGS="-L/root/.vosk/libvosk -lvosk -ldl -lpthread" \
        /usr/local/go/bin/go build -tags nolibopusfile -o chipper cmd/vosk/main.go \
     && cp -a /root/.vosk /home/wirepod/.vosk \
+    && chmod 0755 /usr/local/bin/wire-pod-entrypoint \
     && chown -R wirepod:wirepod /wire-pod /home/wirepod
 
 USER wirepod
@@ -19,4 +31,4 @@ ENV HOME=/home/wirepod \
     DATA_DIR=/wire-pod/data \
     LD_LIBRARY_PATH=/home/wirepod/.vosk/libvosk
 WORKDIR /wire-pod/chipper
-CMD ["bash", "-lc", "source ./source.sh && exec ./chipper"]
+CMD ["/usr/local/bin/wire-pod-entrypoint"]

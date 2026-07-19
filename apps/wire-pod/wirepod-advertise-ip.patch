@@ -1,0 +1,15 @@
+diff --git a/chipper/pkg/vars/vars.go b/chipper/pkg/vars/vars.go
+index 5b236b0..3a6f825 100644
+--- a/chipper/pkg/vars/vars.go
++++ b/chipper/pkg/vars/vars.go
+@@ -438,6 +438,10 @@ func GetRobot(serial string) (*vector.Vector, error) {
+ }
+ 
+ func GetOutboundIP() net.IP {
++	if configured := net.ParseIP(strings.TrimSpace(os.Getenv("WIREPOD_ADVERTISE_IP"))); configured != nil {
++		return configured
++	}
++
+ 	if runtime.GOOS == "android" {
+ 		ifaces, _ := anet.Interfaces()
+ 		for _, iface := range ifaces {

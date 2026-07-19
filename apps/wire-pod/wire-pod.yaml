@@ -27,7 +27,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: wire-pod
-        image: wire-pod-nonroot:20260717-2
+        image: wire-pod-nonroot:20260719-1
         imagePullPolicy: Never
         securityContext:
           allowPrivilegeEscalation: false
@@ -48,6 +48,10 @@ spec:
           value: Europe/London
         - name: DATA_DIR
           value: /wire-pod/data
+        - name: WIREPOD_ADVERTISE_IP
+          value: 192.168.1.29
+        - name: DEBUG_LOGGING
+          value: "true"
         volumeMounts:
         - name: data
           mountPath: /wire-pod/data

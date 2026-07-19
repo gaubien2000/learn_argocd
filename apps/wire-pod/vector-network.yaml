@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wire-pod-vector-compat
+  namespace: wire-pod
+spec:
+  selector:
+    app: wire-pod
+  externalIPs:
+    - 192.168.1.29
+  ports:
+    - name: vector-compat
+      port: 8084
+      targetPort: 8084
+      protocol: TCP
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: wire-pod-vector-tls
+  namespace: wire-pod
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HostSNI(`escapepod.local`)
+      services:
+        - name: wire-pod
+          port: 443
+  tls:
+    passthrough: true
