@@ -85,19 +85,16 @@ spec:
             cpu: "2"
             memory: 2Gi
         startupProbe:
-          httpGet:
-            path: /
+          tcpSocket:
             port: web
           failureThreshold: 60
           periodSeconds: 5
         readinessProbe:
-          httpGet:
-            path: /
+          tcpSocket:
             port: web
           periodSeconds: 10
         livenessProbe:
-          httpGet:
-            path: /
+          tcpSocket:
             port: web
           initialDelaySeconds: 30
           periodSeconds: 30
