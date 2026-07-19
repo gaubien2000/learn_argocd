@@ -9,6 +9,8 @@ spec:
     repoURL: 'https://github.com/gaubien2000/learn_argocd.git'
     targetRevision: main
     path: apps/wire-pod
+    directory:
+      exclude: '{Dockerfile.hardened,apiConfig.escape-pod.json,persistent-entrypoint.sh,wirepod-advertise-ip.patch}'
   destination:
     server: https://kubernetes.default.svc
     namespace: wire-pod
